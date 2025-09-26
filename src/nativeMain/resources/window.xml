@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<interface>
+
+    <!-- 1. GtkApplication: ID приложения (Должен совпадать с кодом Kotlin) -->
+    <object class="GtkApplication" id="app">
+        <property name="application-id">orc.zdertis420.termulator</property>
+    </object>
+
+    <!-- 2. GtkApplicationWindow: Главное окно -->
+    <object class="GtkApplicationWindow" id="main_window">
+        <property name="title">GTK: Ввод и Консоль</property>
+        <property name="default-width">350</property>
+        <property name="default-height">150</property>
+        <!-- КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Связывание окна с приложением -->
+        <property name="application">app</property>
+
+        <child>
+            <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">12</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
+                <property name="margin-top">20</property>
+                <property name="margin-bottom">20</property>
+                <child>
+                    <!-- Поле ввода -->
+                    <object class="GtkEntry" id="input_entry">
+                        <property name="placeholder-text">Введите текст и нажмите Enter</property>
+                    </object>
+                </child>
+                <child>
+                    <!-- Кнопка подтверждения -->
+                    <object class="GtkButton" id="submit_button">
+                        <property name="label">Вывести в консоль (Нажмите Enter)</property>
+                    </object>
+                </child>
+            </object>
+        </child>
+    </object>
+
+</interface>
