@@ -15,8 +15,8 @@ window {
   font-size: 14px;
 }
 */
-.entry {
-  border-color: red;
+.box {
+  color: red;
   border: none;
   box-shadow: none;
   padding: 8px;
