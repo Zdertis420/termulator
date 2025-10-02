@@ -21,7 +21,7 @@ import platform.posix.getenv
 import platform.posix.gethostname
 import kotlin.system.exitProcess
 
-fun main() {
+fun main(args: Array<String>) {
     Log.installConsoleLogWriter()
 
     val app = Application("orc.zdertis420.termulator", ApplicationFlags.FLAGS_NONE)
@@ -65,6 +65,10 @@ fun main() {
         mainBox.append(inputBox)
 
         window.child = mainBox
+
+        if (args.isNotEmpty()) {
+
+        }
 
         val handleInput = {
             val text: String = entry.getText()
