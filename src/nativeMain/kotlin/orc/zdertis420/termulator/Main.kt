@@ -12,7 +12,11 @@ import org.gtkkn.bindings.gtk.Box
 import org.gtkkn.bindings.gtk.CssProvider
 import org.gtkkn.bindings.gtk.Entry
 import org.gtkkn.bindings.gtk.Orientation
+import org.gtkkn.bindings.gtk.ScrolledWindow
 import org.gtkkn.bindings.gtk.StyleContext
+import org.gtkkn.bindings.gtk.TextBuffer
+import org.gtkkn.bindings.gtk.TextView
+import org.gtkkn.bindings.gtk.WrapMode
 import org.gtkkn.extensions.gio.runApplication
 import org.gtkkn.extensions.glib.util.log.Log
 import org.gtkkn.extensions.glib.util.log.writer.installConsoleLogWriter
@@ -21,8 +25,18 @@ import platform.posix.getenv
 import platform.posix.gethostname
 import kotlin.system.exitProcess
 
+var runCode = 0
+
 fun main(args: Array<String>) {
     Log.installConsoleLogWriter()
+
+    if (args.isNotEmpty()) {
+        parseArgs(args)
+    }
+
+    if (runCode == 1) {
+        exitProcess(0)
+    }
 
     val app = Application("orc.zdertis420.termulator", ApplicationFlags.FLAGS_NONE)
     app.onActivate {
@@ -44,11 +58,22 @@ fun main(args: Array<String>) {
 
         val margin = 12
 
-        val contentArea = Box(Orientation.VERTICAL, 0)
-        contentArea.vexpand = true
-        contentArea.marginTop = margin
-        contentArea.marginStart = margin
-        contentArea.marginEnd = margin
+        val outputBuffer = TextBuffer()
+
+        val outputView = TextView(outputBuffer)
+        outputView.editable = false
+        outputView.cursorVisible = false
+        outputView.wrapMode = WrapMode.WORD
+        outputView.getStyleContext().addClass("terminal-output-area")
+
+        val scrolledWindow = ScrolledWindow()
+        scrolledWindow.vexpand = true
+        scrolledWindow.child = outputView
+        scrolledWindow.getStyleContext().addClass("scrolled-window")
+
+        scrolledWindow.marginTop = margin
+        scrolledWindow.marginStart = margin
+        scrolledWindow.marginEnd = margin
 
         val inputBox = Box(Orientation.VERTICAL, 0)
 
@@ -58,20 +83,20 @@ fun main(args: Array<String>) {
 
         val entry = Entry()
         entry.placeholderText = "Введите команду и нажмите Enter..."
+        entry.getStyleContext().addClass("input-field")
 
         inputBox.append(entry)
 
-        mainBox.append(contentArea)
+        mainBox.append(scrolledWindow)
         mainBox.append(inputBox)
 
         window.child = mainBox
 
-        if (args.isNotEmpty()) {
-
-        }
-
         val handleInput = {
             val text: String = entry.getText()
+
+            outputBuffer.insertAtCursor("$text\n", text.length)
+
             parseCommand(text)
             entry.setText("")
         }
@@ -104,5 +129,26 @@ fun parseCommand(command: String) {
         command =="exit" -> exitProcess(0)
         command.take(2) == "cd" -> println("Change Directry")
         command.take(2) == "ls" -> println("List")
+    }
+}
+
+fun parseArgs(args: Array<String>) {
+        for (arg in args) {
+        when (arg) {
+            "--help", "-h" -> {
+                println("Help")
+                runCode = 1
+            }
+
+            "--version", "-v" -> {
+                println("Version 0.1")
+                runCode = 1
+            }
+
+            else -> {
+                println("Unknown argument: $arg")
+                runCode = 1
+            }
+        }
     }
 }
